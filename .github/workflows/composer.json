@@ -1,10 +1,16 @@
 {
-  "name": "drupal-ckeditor-libraries-group/codesnippet",
-  "description": "Unofficial CKEditor 4 Codesnippet addon library from https://ckeditor.com/cke4/addon/codesnippet for Drupal projects",
+  "name": "drupal-ckeditor-libraries-group/__PLUGIN__",
+  "description": "CKEditor 4 __PLUGIN__ plugin",
   "type": "drupal-library",
+  "keywords": ["ckeditor", "plugin", "__PLUGIN__"],
+  "homepage": "https://ckeditor.com/cke4/addon/__PLUGIN__",
   "license": [
-    "GPL-3.0-or-later",
-    "MPL-1.1",
-    "LGPL-3.0-or-later"
-  ]
+    "GPL-2.0-or-later",
+    "LGPL-2.1-or-later",
+    "MPL-1.1"
+  ],
+  "support": {
+    "issues": "https://github.com/ckeditor/ckeditor4/issues",
+    "source": "https://github.com/ckeditor/ckeditor4/tree/master/plugins/__PLUGIN__"
+  }
 }
