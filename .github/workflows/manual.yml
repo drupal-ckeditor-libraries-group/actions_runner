@@ -36,7 +36,7 @@ jobs:
     steps:
     # Runs a single command using the runners shell        
     - name: prepare plugin
-      run:
+      run: |
         echo "Processing ${{ matrix.repo_name }}"
         if [ ! -d ${{ matrix.repo_name }} ]; then
           mkdir -p ${{ matrix.repo_name }}
