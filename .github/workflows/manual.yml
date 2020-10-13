@@ -12,21 +12,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  pull-ckeditor:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pull
-        run: git clone https://github.com/ckeditor/ckeditor4.git ckeditor4
-  
-  prepare-process-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install
-        run: pip3 install git-filter-repo
-     
-  # This workflow contains a single job called "greet"
-  greet:
-    needs: [pull-ckeditor, prepare-process-dependencies]
+  perform:
     strategy:
       matrix:
         repo_name:
@@ -40,26 +26,30 @@ jobs:
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Runs a single command using the runners shell        
-    - name: prepare plugin
-      run: |
-        echo "Processing ${{ matrix.repo_name }}"
-        if [ ! -d ${{ matrix.repo_name }} ]; then
-          mkdir -p ${{ matrix.repo_name }}
-          pushd ${{ matrix.repo_name }} > /dev/null
-          git init
-          popd > /dev/null
-        fi
-        pushd ${{ matrix.repo_name }} > /dev/null
-        git filter-repo --source ../ckeditor4 --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
-        git checkout major
-        for file in composer.json package.json
-        do
-          if [ ! -f ${file} ]; then
-            sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" ../skel/${file} > ${file}
-            ../insert-beginning --file ${file}
+      - name: Pull
+        run: git clone https://github.com/ckeditor/ckeditor4.git ckeditor4
+      - name: Install
+        run: pip3 install git-filter-repo
+      # Runs a single command using the runners shell        
+      - name: prepare plugin
+        run: |
+          echo "Processing ${{ matrix.repo_name }}"
+          if [ ! -d ${{ matrix.repo_name }} ]; then
+            mkdir -p ${{ matrix.repo_name }}
+            pushd ${{ matrix.repo_name }} > /dev/null
+            git init
+            popd > /dev/null
           fi
-        done
-        git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
-        git branch --set-upstream-to=origin/major
-        popd > /dev/null
+          pushd ${{ matrix.repo_name }} > /dev/null
+          git filter-repo --source ../ckeditor4 --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
+          git checkout major
+          for file in composer.json package.json
+          do
+            if [ ! -f ${file} ]; then
+              sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" ../skel/${file} > ${file}
+              ../insert-beginning --file ${file}
+            fi
+          done
+          git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+          git branch --set-upstream-to=origin/major
+          popd > /dev/null
