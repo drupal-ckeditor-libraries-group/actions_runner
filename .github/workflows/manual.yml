@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update indies
-        run: apt-get update
+        run: sudo apt-get update
       - name: Install
-        run: apt-get install git-filter-repo -y
+        run: sudo apt-get install git-filter-repo -y
      
   # This workflow contains a single job called "greet"
   greet:
