@@ -30,7 +30,9 @@ jobs:
       - name: prepare plugin
         run: |
           git clone https://github.com/ckeditor/ckeditor4.git ckeditor4
-          pip3 install git-filter-repo
+          git clone https://github.com/newren/git-filter-repo.git git-filter-repo
+          cp -a git-filter-repo/git-filter-repo $(git --exec-path)
+          ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
           echo "Processing ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
