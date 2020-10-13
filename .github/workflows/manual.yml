@@ -18,17 +18,15 @@ jobs:
       - name: Pull
         run: git clone https://github.com/ckeditor/ckeditor4.git ckeditor4
   
-  prepre-process-dependencies:
+  prepare-process-dependencies:
     runs-on: ubuntu-latest
     steps:
-      - name: Update indies
-        run: sudo apt-get update
       - name: Install
-        run: sudo apt-get install git-filter-repo -y
+        run: pip3 install git-filter-repo -y
      
   # This workflow contains a single job called "greet"
   greet:
-    needs: [pull-ckeditor]
+    needs: [pull-ckeditor, prepare-process-dependencies]
     strategy:
       matrix:
         repo_name:
