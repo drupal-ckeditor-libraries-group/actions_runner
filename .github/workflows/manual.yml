@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install
-        run: pip3 install git-filter-repo -y
+        run: pip3 install git-filter-repo
      
   # This workflow contains a single job called "greet"
   greet:
