@@ -41,8 +41,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Prepare git environment
         run: |
-          cp -a git-filter-repo/git-filter-repo $(git --exec-path)
-          ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
+          sudo cp -a git-filter-repo/git-filter-repo $(git --exec-path)
+          sudo sln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
+          echo "You are $PWD"
       - name: Generate repos
         run: |
           echo "Processing ${{ matrix.repo_name }}"
