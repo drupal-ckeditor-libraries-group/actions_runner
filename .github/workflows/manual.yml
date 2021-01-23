@@ -68,3 +68,4 @@ jobs:
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           git branch --set-upstream-to=origin/major
           popd > /dev/null
+        shell: bash
