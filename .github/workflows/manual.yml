@@ -45,7 +45,6 @@ jobs:
           sudo ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
           echo "You are here: $PWD"
       - name: Generate repos
-        uses: actions/checkout@v2
         run: |
           HOME="$PWD"
           sudo ls -l
