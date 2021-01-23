@@ -60,7 +60,7 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" .$HOME/template/${file} > ${file}
+              sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/template/${file} > ${file}
               ../insert-beginning --file ${file}
             fi
           done
