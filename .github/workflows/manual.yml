@@ -46,6 +46,7 @@ jobs:
           echo "You are here: $PWD"
       - name: Generate repos
         run: |
+          HOME="$PWD"
           echo "Processing ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
@@ -59,7 +60,7 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" ./${file} > ${file}
+              sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" .$HOME/${file} > ${file}
               ../insert-beginning --file ${file}
             fi
           done
