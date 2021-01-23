@@ -26,11 +26,21 @@ jobs:
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Runs a single command using the runners shell        
+      # Checks out ckeditor/ckeditor4
+      - name: Checkout ckeditor4
+        uses: actions/checkout@v2
+        with:
+          repository: ckeditor/ckeditor4
+          path: ckeditor4
+      # Checks out newren/git-filter-repo
+      - name: Checkout git-filter-repo
+        uses: actions/checkout@v2
+        with:
+          repository: newren/git-filter-repo
+          path: git-filter-repo
+      # Runs a single command using the runners shell
       - name: prepare plugin
         run: |
-          git clone https://github.com/ckeditor/ckeditor4.git ckeditor4
-          git clone https://github.com/newren/git-filter-repo.git git-filter-repo
           cp -a git-filter-repo/git-filter-repo $(git --exec-path)
           ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
           echo "Processing ${{ matrix.repo_name }}"
