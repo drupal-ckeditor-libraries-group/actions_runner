@@ -67,7 +67,9 @@ jobs:
             if [ ! -f ${file} ]; then
               sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
               echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
-              $HOME/git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
+              RELATIVE_TO_PROJECT_ROOT_PATHNAME="."
+              FILENAME="${file}"
+              git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', $RELATIVE_TO_PROJECT_ROOT_PATHNAME, b'$(git hash-object -w $FILENAME)', b'100644'))"
             fi
           done
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
