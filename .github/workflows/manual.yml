@@ -65,6 +65,7 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
+              echo "Generating ${{ matrix.repo_name }}/${file} "
               sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
               ../insert-beginning --file ${file}
             fi
