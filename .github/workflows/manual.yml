@@ -52,7 +52,6 @@ jobs:
       - name: Generate repo
         run: |
           HOME="$PWD"
-          sudo ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
           echo "Processing ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
@@ -68,7 +67,7 @@ jobs:
             if [ ! -f ${file} ]; then
               sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
               echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
-              ../insert-beginning --file ${file}
+              ./$HOME/git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
             fi
           done
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
