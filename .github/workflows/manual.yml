@@ -69,8 +69,10 @@ jobs:
               echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
               FILENAME="${file}"
               git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', '', b'$(git hash-object -w $FILENAME)', b'100644'))"
+              echo "filter-repo added ${file} in!"
             fi
           done
+          echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           git branch --set-upstream-to=origin/major
           popd > /dev/null
