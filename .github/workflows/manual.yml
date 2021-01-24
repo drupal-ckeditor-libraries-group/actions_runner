@@ -65,9 +65,9 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              echo "Generating ${{ matrix.repo_name }}/${file} "
+              echo "Generating ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
               sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
-              ../insert-beginning --file ${file}
+              $HOME/git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
             fi
           done
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
