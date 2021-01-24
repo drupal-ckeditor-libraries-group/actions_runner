@@ -52,6 +52,7 @@ jobs:
       - name: Generate repo
         run: |
           HOME="$PWD"
+          export PYTHONPATH=$PYTHONPATH:$(git --exec-path)/git-filter-repo
           echo "Processing ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
