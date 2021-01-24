@@ -65,7 +65,7 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              if [ -f $HOME/runner/template/${file}" ]; then
+              if [ -f "$HOME/runner/template/${file}" ]; then
                 sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
                 echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
                 FILENAME="${file}"
