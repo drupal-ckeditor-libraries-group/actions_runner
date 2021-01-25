@@ -74,16 +74,19 @@ jobs:
               fi
             fi
           done
-          echo "Importing SSH key"
-          key="$HOME/sshkey"
-          echo "$GITHUB_TOKEN" >> "$key"
-          echo "Adding SSH key to bash"
-          ssh-add -K "$key"
-          echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
-          git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
-          git config branch.major.remote origin
-          git config branch.major.merge refs/heads/major
-          git config push.default simple
-          git push
+          if [ -z $GITHUB_TOKEN ]; then
+            echo "SSH key not active, skipping."
+          else
+            echo "Importing SSH key to $HOME/sshkey"
+            key="$HOME/sshkey"
+            echo "$GITHUB_TOKEN" >> "$key"
+            echo "Adding SSH key from $HOME/sshkey sto bash"
+            ssh-add -K "$key"
+            echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
+            git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+            git config branch.major.remote origin
+            git config branch.major.merge refs/heads/major
+            git config push.default simple
+            git push
           popd > /dev/null
         shell: bash
