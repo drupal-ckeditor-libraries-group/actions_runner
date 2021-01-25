@@ -80,7 +80,8 @@ jobs:
             echo "Importing SSH key to $HOME/sshkey"
             key="$HOME/sshkey"
             echo "$GITHUB_TOKEN" >> "$key"
-            echo "Adding SSH key from $HOME/sshkey sto bash"
+            echo "Adding SSH key from $HOME/sshkey to bash"
+            eval `ssh-agent -s`
             ssh-add -K "$key"
             echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
