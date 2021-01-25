@@ -46,6 +46,8 @@ jobs:
           sudo ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
         shell: bash
       - name: Generate repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
           HOME="$PWD"
           echo "Processing ${{ matrix.repo_name }}"
@@ -72,6 +74,11 @@ jobs:
               fi
             fi
           done
+          echo "Importing SSH key"
+          key="~/sshkey"
+          echo $GITHUB_TOKEN >> "$key"
+          echo "Adding SSH key to bash"
+          ssh-add -K "$key"
           echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           git config branch.major.remote origin
