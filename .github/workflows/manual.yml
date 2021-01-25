@@ -75,8 +75,8 @@ jobs:
             fi
           done
           echo "Importing SSH key"
-          key="~/sshkey"
-          echo $GITHUB_TOKEN >> "$key"
+          key="$HOME/sshkey"
+          echo "$GITHUB_TOKEN" >> "$key"
           echo "Adding SSH key to bash"
           ssh-add -K "$key"
           echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
