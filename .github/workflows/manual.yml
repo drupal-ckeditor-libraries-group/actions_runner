@@ -45,12 +45,12 @@ jobs:
           sudo cp -a git-filter-repo/git-filter-repo $(git --exec-path)
           sudo ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
         shell: bash
+      # Generate repository
       - name: Generate repo
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
-          HOME="$PWD"
-          echo "Processing ${{ matrix.repo_name }}"
+          echo "Processing CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
             pushd ${{ matrix.repo_name }} > /dev/null
@@ -60,6 +60,13 @@ jobs:
           pushd ${{ matrix.repo_name }} > /dev/null
           git filter-repo --source ../ckeditor4 --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
           git checkout major
+        shell: bash
+      # Generate JSON
+      - name: Generate JSON
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+        run: |
+          HOME="$PWD"
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
@@ -74,6 +81,12 @@ jobs:
               fi
             fi
           done
+        shell: bash
+      # Generate JSON
+      - name: Commit to Drupal CKEditor Libraries Group
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+        run: |
           if [[ -z $GITHUB_TOKEN ]]; then
             echo "SSH key not active, skipping."
           else
