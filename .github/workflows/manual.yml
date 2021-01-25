@@ -80,6 +80,7 @@ jobs:
             echo "Importing SSH key to $HOME/sshkey"
             key="$HOME/sshkey"
             echo "$GITHUB_TOKEN" >> "$key"
+            chmod 0600 "$key"
             echo "Adding SSH key from $HOME/sshkey to bash"
             eval `ssh-agent -s`
             ssh-add "$key"
