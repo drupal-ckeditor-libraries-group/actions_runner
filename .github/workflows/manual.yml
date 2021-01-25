@@ -88,5 +88,6 @@ jobs:
             git config branch.major.merge refs/heads/major
             git config push.default simple
             git push
+          fi
           popd > /dev/null
         shell: bash
