@@ -38,11 +38,20 @@ jobs:
         with:
           repository: newren/git-filter-repo
           path: git-filter-repo
+      # Checks out this repo
+      - name: Checkout this repo
+        uses: actions/checkout@v2
+        with:
+          path: runner
       # Runs a single command using the runners shell
-      - name: prepare plugin
+      - name: Prepare git-filter-repo
         run: |
-          cp -a git-filter-repo/git-filter-repo $(git --exec-path)
-          ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
+          sudo cp -a git-filter-repo/git-filter-repo $(git --exec-path)
+          sudo ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
+        shell: bash
+      - name: Generate repo
+        run: |
+          HOME="$PWD"
           echo "Processing ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
@@ -56,10 +65,19 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" ../skel/${file} > ${file}
-              ../insert-beginning --file ${file}
+              if [ -f "$HOME/runner/template/${file}" ]; then
+                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
+                echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
+                FILENAME="${file}"
+                git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
+                echo "filter-repo added ${file} in!"
+              else
+                echo "Sorry, ${file} template not found in $HOME/runner/template."
+              fi
             fi
           done
+          echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           git branch --set-upstream-to=origin/major
           popd > /dev/null
+        shell: bash
