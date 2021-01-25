@@ -1,0 +1,15 @@
+{
+  "name": "@drupal-ckeditor-libraries-group/__PLUGIN__",
+  "description": "CKEditor 4 __PLUGIN__ plugin",
+  "keywords": ["ckeditor", "plugin", "__PLUGIN__"],
+  "homepage": "https://ckeditor.com/cke4/addon/__PLUGIN__",
+  "bugs": {
+    "url": "https://github.com/ckeditor/ckeditor4/issues"
+  },
+  "license" : "(GPL-2.0-or-later OR LGPL-2.1-or-later OR MPL-1.1)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckeditor/ckeditor4.git",
+    "directory": "plugins/__PLUGIN__"
+	}
+}
