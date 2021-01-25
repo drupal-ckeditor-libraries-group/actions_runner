@@ -72,8 +72,8 @@ jobs:
               fi
             fi
           done
-          echo "Writing to https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
-          git remote add origin https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+          echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
+          git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           git config branch.major.remote origin
           git config branch.major.merge refs/heads/major
           git config push.default simple
