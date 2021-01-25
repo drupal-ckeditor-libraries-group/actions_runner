@@ -17,11 +17,7 @@ jobs:
       matrix:
         repo_name:
           # define the list of repos here
-          - codesnippet
-          - colorbutton
-          - fakeobjects
-          - font
-          - notification
+          - templates
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -76,8 +72,8 @@ jobs:
               fi
             fi
           done
-          echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
-          git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+          echo "Writing to https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
+          git remote add origin https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           git config branch.major.remote origin
           git config branch.major.merge refs/heads/major
           git config push.default simple
