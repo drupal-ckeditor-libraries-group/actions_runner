@@ -60,6 +60,7 @@ jobs:
           pushd ${{ matrix.repo_name }} > /dev/null
           git filter-repo --source ../ckeditor4 --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
           git checkout major
+          popd > /dev/null
         shell: bash
       # Generate JSON
       - name: Generate JSON
@@ -67,6 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
           HOME="$PWD"
+          pushd ${{ matrix.repo_name }} > /dev/null
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
@@ -81,12 +83,14 @@ jobs:
               fi
             fi
           done
+          popd > /dev/null
         shell: bash
       # Generate JSON
       - name: Commit to Drupal CKEditor Libraries Group
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
+          pushd ${{ matrix.repo_name }} > /dev/null
           if [[ -z $GITHUB_TOKEN ]]; then
             echo "SSH key not active, skipping."
           else
