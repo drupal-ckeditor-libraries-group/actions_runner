@@ -120,7 +120,7 @@ jobs:
             git config branch.major.remote origin
             git config branch.major.merge refs/heads/major
             git config push.default simple
-            git push --force-with-lease
+            git push -f origin major
           fi
           popd > /dev/null
         shell: bash
