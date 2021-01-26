@@ -55,11 +55,12 @@ jobs:
             mkdir -p ${{ matrix.repo_name }}
             pushd ${{ matrix.repo_name }} > /dev/null
             git init
-            git checkout major
             popd > /dev/null
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
-          git filter-repo --source ../ckeditor4 --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
+          git filter-repo --source ../ckeditor4 --target ./ --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
+          git checkout major
+          ls -l
           git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
           popd > /dev/null
         shell: bash
