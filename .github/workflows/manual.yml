@@ -68,6 +68,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
           HOME="$PWD"
+          ls -l
           pushd ${{ matrix.repo_name }} > /dev/null
           for file in composer.json package.json
           do
@@ -76,7 +77,7 @@ jobs:
               echo "Processing ${file}..."
                 sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
                 echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
-                ./$HOME/git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
+                ./$HOME/../git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
                 echo "filter-repo added ${file} in!"
               else
                 echo "Sorry, ${file} template not found in $HOME/runner/template."
