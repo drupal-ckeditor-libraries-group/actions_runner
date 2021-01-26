@@ -68,7 +68,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
           HOME="$PWD"
-          ls -l
           pushd ${{ matrix.repo_name }} > /dev/null
           for file in composer.json package.json
           do
