@@ -23,6 +23,7 @@ jobs:
         - find
         - font
         - notification
+        - panelbutton
         - templates
         - xml
     # The type of runner that the job will run on
