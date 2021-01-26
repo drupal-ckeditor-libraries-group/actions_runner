@@ -73,13 +73,12 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              echo "::set-env name=PYTHONPATH::HOME/git-filter-repo/git-filter-repo.py"
-              echo "PYTHONPATH: $PYTHONPATH"
               if [ -f "$HOME/runner/template/${file}" ]; then
               echo "Processing ${file}..."
                 sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
                 echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
-                $HOME/git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
+                FILENAME="${file}"
+                git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
                 echo "filter-repo added ${file} in!"
               else
                 echo "Sorry, ${file} template not found in $HOME/runner/template."
