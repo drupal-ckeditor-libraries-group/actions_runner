@@ -73,8 +73,7 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              echo 'export PYTHONPATH=$PYTHONPATH:$HOME/git-filter-repo/git-filter-repo.py' >> $HOME/.bashrc
-              cat $HOME/.bashrc
+              echo "::set-env name=PYTHONPATH::HOME/git-filter-repo/git-filter-repo.py"
               echo "PYTHONPATH: $PYTHONPATH"
               if [ -f "$HOME/runner/template/${file}" ]; then
               echo "Processing ${file}..."
