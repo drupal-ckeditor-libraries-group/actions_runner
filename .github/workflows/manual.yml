@@ -59,9 +59,7 @@ jobs:
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
           git filter-repo --source ../ckeditor4 --target ./ --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
-          git checkout major
-          ls -l
-          git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+          git checkout majors
           popd > /dev/null
         shell: bash
       # Generate JSON
@@ -97,14 +95,20 @@ jobs:
           if [[ -z $GITHUB_TOKEN ]]; then
             echo "SSH key not active, skipping."
           else
-            echo "Importing SSH key to $HOME/sshkey"
+            echo "### Importing SSH key to $HOME/sshkey"
             key="$HOME/sshkey"
             echo "$GITHUB_TOKEN" >> "$key"
             chmod 0600 "$key"
-            echo "Adding SSH key from $HOME/sshkey to bash"
+            echo ""
+            echo "### Adding SSH key from $HOME/sshkey to bash"
             eval `ssh-agent -s`
             ssh-add "$key"
-            echo "Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
+            echo ""
+            git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+            echo "### Sniffing remotes:"
+            git remote -v
+            echo ""
+            echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git config branch.major.remote origin
             git config branch.major.merge refs/heads/major
             git config push.default simple
