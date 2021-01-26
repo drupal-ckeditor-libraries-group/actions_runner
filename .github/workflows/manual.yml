@@ -73,9 +73,9 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              echo 'export PYTHONPATH=$PYTHONPATH:$(git --exec-path)/git-filter-repo' >> $HOME/.bashrc
+              echo 'export PYTHONPATH=$PYTHONPATH:$HOME/git-filter-repo/git-filter-repo.py' >> $HOME/.bashrc
               cat $HOME/.bashrc
-
+              echo "PYTHONPATH: $PYTHONPATH"
               if [ -f "$HOME/runner/template/${file}" ]; then
               echo "Processing ${file}..."
                 sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
