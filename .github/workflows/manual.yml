@@ -76,8 +76,7 @@ jobs:
               echo "Processing ${file}..."
                 sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
                 echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
-                FILENAME="${file}"
-                git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
+                ./$HOME/git-filter-repo/contrib/filter-repo-demos/insert-beginning --file ${file}
                 echo "filter-repo added ${file} in!"
               else
                 echo "Sorry, ${file} template not found in $HOME/runner/template."
