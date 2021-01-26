@@ -118,7 +118,7 @@ jobs:
             echo ""
             echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git config branch.major.remote origin
-            git push -u -f origin major
+            git push -u -f origin major --tags
           fi
           popd > /dev/null
         shell: bash
