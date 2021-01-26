@@ -20,6 +20,7 @@ jobs:
         - codesnippet
         - colorbutton
         - fakeobjects
+        - find
         - font
         - notification
         - templates
