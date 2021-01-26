@@ -50,7 +50,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
-          echo "Processing CKEditor project: ${{ matrix.repo_name }}"
+          echo "### Processing CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
             pushd ${{ matrix.repo_name }} > /dev/null
@@ -59,6 +59,8 @@ jobs:
             popd > /dev/null
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
+          echo ""
+          echo "### Filtering repo using subdirectory plugins/${{ matrix.repo_name }}"
           git filter-repo --source ../ckeditor4 --target ./ --preserve-commit-hashes --prune-empty always --subdirectory-filter plugins/${{ matrix.repo_name }}
           git checkout major
           popd > /dev/null
@@ -74,14 +76,18 @@ jobs:
           do
             if [ ! -f ${file} ]; then
               if [ -f "$HOME/runner/template/${file}" ]; then
-              echo "Processing ${file}..."
+              echo ""
+              echo "### Processing ${file}..."
                 sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
-                echo "Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
+                echo ""
+                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
                 FILENAME="${file}"
                 git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
-                echo "filter-repo added ${file} in!"
+                echo ""
+                echo "### filter-repo added ${file} in!"
               else
-                echo "Sorry, ${file} template not found in $HOME/runner/template."
+                echo ""
+                echo "### Sorry, ${file} template not found in $HOME/runner/template."
               fi
             fi
           done
