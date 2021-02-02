@@ -17,6 +17,7 @@ jobs:
       matrix:
         repo_name:
         # define the list of repos here
+        - balloonpanel
         - codesnippet
         - colorbutton
         - div
