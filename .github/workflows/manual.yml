@@ -56,8 +56,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Prepare git-filter-repo
         run: |
-          sudo cp -a git-filter-repo/git-filter-repo $(git --exec-path)
-          sudo ln -s $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
+          sudo cp -av git-filter-repo/git-filter-repo $(git --exec-path)
+          echo "### Placing $(git --exec-path)/git-filter-repo into $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py"
+          sudo ln -sv $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
         shell: bash
       # Generate repository
       - name: Generate repo
