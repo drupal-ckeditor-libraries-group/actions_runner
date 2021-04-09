@@ -58,6 +58,7 @@ jobs:
         run: |
           sudo cp -av git-filter-repo/git-filter-repo $(git --exec-path)
           echo "### Placing $(git --exec-path)/git-filter-repo into $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py"
+          sudo mkdir -p $(python -c "import site; print(site.getsitepackages()[-1])")
           sudo ln -sv $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
         shell: bash
       # Generate repository
