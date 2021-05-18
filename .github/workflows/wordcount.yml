@@ -1,0 +1,124 @@
+# This is a basic workflow that is manually triggered
+
+name: Wordcount plugin workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  schedule:
+    - cron: "0 0 1 */6 *"
+  workflow_dispatch:
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deployproject:
+    strategy:
+      matrix:
+        repo_name:
+        # define the list of repos here
+        - CKEditor-WordCount-Plugin
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks out ckeditor/ckeditor4
+      - name: Checkout ckeditor4
+        uses: actions/checkout@v2
+        with:
+          repository: w8tcha/CKEditor-WordCount-Plugin
+          path: ckeditor4
+          fetch-depth: 0
+      # Checks out newren/git-filter-repo
+      - name: Checkout git-filter-repo
+        uses: actions/checkout@v2
+        with:
+          repository: newren/git-filter-repo
+          path: git-filter-repo
+      # Checks out this repo
+      - name: Checkout this repo
+        uses: actions/checkout@v2
+        with:
+          path: runner
+      # Runs a single command using the runners shell
+      - name: Prepare git-filter-repo
+        run: |
+          sudo cp -av git-filter-repo/git-filter-repo $(git --exec-path)
+          echo "### Placing $(git --exec-path)/git-filter-repo into $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py"
+          sudo mkdir -p $(python -c "import site; print(site.getsitepackages()[-1])")
+          sudo ln -sv $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
+        shell: bash
+      # Generate repository
+      - name: Generate repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+        run: |
+          echo "### Processing CKEditor project: ${{ matrix.repo_name }}"
+          if [ ! -d ${{ matrix.repo_name }} ]; then
+            mkdir -p ${{ matrix.repo_name }}
+            pushd ${{ matrix.repo_name }} > /dev/null
+            git init
+            git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+            popd > /dev/null
+          fi
+          pushd ${{ matrix.repo_name }} > /dev/null
+          echo ""
+          git checkout master
+          popd > /dev/null
+        shell: bash
+      # Generate JSON
+      - name: Generate JSON
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+        run: |
+          HOME="$PWD"
+          pushd ${{ matrix.repo_name }} > /dev/null
+          for file in composer.json package.json
+          do
+            if [ ! -f ${file} ]; then
+              if [ -f "$HOME/runner/template/wordcount/${file}" ]; then
+              echo ""
+              echo "### Processing ${file}..."
+                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/wordcount/${file} > ${file}
+                echo ""
+                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/wordcount/${file}"
+                FILENAME="${file}"
+                git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
+                echo ""
+                echo "### filter-repo added ${file} in!"
+              else
+                echo ""
+                echo "### Sorry, ${file} template not found in $HOME/runner/template/wordcount."
+              fi
+            fi
+          done
+          popd > /dev/null
+        shell: bash
+      # Commit JSON files changes
+      - name: Commit to Drupal CKEditor Libraries Group
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+        run: |
+          pushd ${{ matrix.repo_name }} > /dev/null
+          if [[ -z $GITHUB_TOKEN ]]; then
+            echo "SSH key not active, skipping."
+          else
+            echo "### Importing SSH key to $HOME/sshkey"
+            key="$HOME/sshkey"
+            echo "$GITHUB_TOKEN" >> "$key"
+            chmod 0600 "$key"
+            echo ""
+            echo "### Adding SSH key from $HOME/sshkey to bash"
+            eval `ssh-agent -s`
+            ssh-add "$key"
+            echo ""
+            git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+            echo "### Sniffing remotes:"
+            git remote -v
+            echo ""
+            echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
+            git config branch.master.remote origin
+            git push -u -f origin master --tags
+          fi
+          popd > /dev/null
+        shell: bash
