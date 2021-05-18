@@ -46,26 +46,6 @@ jobs:
           sudo mkdir -p $(python -c "import site; print(site.getsitepackages()[-1])")
           sudo ln -sv $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
         shell: bash
-      
-      # Add SSH keys
-      - name: Prepare SSH keys
-        env:
-          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
-        run: |
-          if [[ -z $GITHUB_TOKEN ]]; then
-            echo "SSH key not active, skipping."
-          else
-            echo "### Importing SSH key to $HOME/sshkey"
-            key="$HOME/sshkey"
-            echo "$GITHUB_TOKEN" >> "$key"
-            chmod 0600 "$key"
-            echo ""
-            echo "### Adding SSH key from $HOME/sshkey to bash"
-            eval `ssh-agent -s`
-            ssh-add "$key"
-          fi
-          popd > /dev/null
-        shell: bash
       # Generate repository
       - name: Generate repo
         env:
@@ -77,11 +57,12 @@ jobs:
             pushd ${{ matrix.repo_name }} > /dev/null
             git init
             git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
-            git fetch --all
             popd > /dev/null
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
+          echo "### Filtering repo using subdirectory plugins/${{ matrix.repo_name }}"
+          git filter-repo --source ../ckeditor4 --target ./ --preserve-commit-hashes --prune-empty auto
           git checkout master
           popd > /dev/null
         shell: bash
@@ -113,7 +94,7 @@ jobs:
           done
           popd > /dev/null
         shell: bash
-      # Commit JSON files changes
+      # Commit to Drupal CKEditor Libraries Group
       - name: Commit to Drupal CKEditor Libraries Group
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
