@@ -17,6 +17,14 @@ jobs:
       matrix:
         repo_name:
         # define the list of repos here
+        - a11yhelp
+        - about
+        - adobeair
+        - ajax
+        - autocomplete
+        - autoembed
+        - autogrow
+        - autolink
         - balloonpanel
         - codesnippet
         - colorbutton
