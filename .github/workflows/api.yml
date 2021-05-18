@@ -52,7 +52,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
-          pushd ${{ matrix.repo_name }} > /dev/null
           if [[ -z $GITHUB_TOKEN ]]; then
             echo "SSH key not active, skipping."
           else
