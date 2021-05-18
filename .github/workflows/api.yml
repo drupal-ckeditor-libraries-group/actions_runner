@@ -57,6 +57,7 @@ jobs:
             pushd ${{ matrix.repo_name }} > /dev/null
             git init
             git remote add origin git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git
+            git fetch --all
             popd > /dev/null
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
