@@ -46,6 +46,27 @@ jobs:
           sudo mkdir -p $(python -c "import site; print(site.getsitepackages()[-1])")
           sudo ln -sv $(git --exec-path)/git-filter-repo $(python -c "import site; print(site.getsitepackages()[-1])")/git_filter_repo.py
         shell: bash
+      
+      # Add SSH keys
+      - name: Prepare SSH keys
+        env:
+          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+        run: |
+          pushd ${{ matrix.repo_name }} > /dev/null
+          if [[ -z $GITHUB_TOKEN ]]; then
+            echo "SSH key not active, skipping."
+          else
+            echo "### Importing SSH key to $HOME/sshkey"
+            key="$HOME/sshkey"
+            echo "$GITHUB_TOKEN" >> "$key"
+            chmod 0600 "$key"
+            echo ""
+            echo "### Adding SSH key from $HOME/sshkey to bash"
+            eval `ssh-agent -s`
+            ssh-add "$key"
+          fi
+          popd > /dev/null
+        shell: bash
       # Generate repository
       - name: Generate repo
         env:
