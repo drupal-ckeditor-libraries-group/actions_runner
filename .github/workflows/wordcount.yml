@@ -63,6 +63,8 @@ jobs:
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
+          echo "### Filtering repo using subdirectory ${{ matrix.repo_name }}"
+          git filter-repo --source ../ckeditor4 --target ./ --preserve-commit-hashes --prune-empty auto --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
           git checkout master
           popd > /dev/null
         shell: bash
@@ -94,7 +96,7 @@ jobs:
           done
           popd > /dev/null
         shell: bash
-      # Commit JSON files changes
+      # Commit to Drupal CKEditor Libraries Group
       - name: Commit to Drupal CKEditor Libraries Group
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
