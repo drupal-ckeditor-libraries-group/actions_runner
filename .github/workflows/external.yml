@@ -83,19 +83,20 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              if [ -f "$HOME/runner/template/${file}" ]; then
+              if [ -f "$HOME/runner/template/external/${file}" ]; then
               echo ""
               echo "### Processing ${file}..."
-                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
+                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/external/${file} > ${file}
+                sed -e "s/__PATH__/${{ matrix.repo }}/g" $HOME/runner/template/external/${file} > ${file}
                 echo ""
-                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
+                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/external/${file}"
                 FILENAME="${file}"
                 git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
                 echo ""
                 echo "### filter-repo added ${file} in!"
               else
                 echo ""
-                echo "### Sorry, ${file} template not found in $HOME/runner/template."
+                echo "### Sorry, ${file} template not found in $HOME/runner/template/external."
               fi
             fi
           done
