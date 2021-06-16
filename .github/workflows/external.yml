@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Wordcount plugin workflow
+name: External plugin workflow
 
 # Controls when the action will run. Workflow runs when manually triggered using the UI
 # or API.
@@ -15,19 +15,24 @@ jobs:
   deployproject:
     strategy:
       matrix:
-        repo_name:
+        include:
         # define the list of repos here
-        - CKEditor-WordCount-Plugin
+        - repo: stevenvdhout/format_buttons
+          repo_name: format_buttons
+        - repo: w8tcha/CKEditor-WordCount-Plugin
+          repo_name: wordcount
+        - repo: fonini/ckeditor-youtube-plugin
+          repo_name: youtube
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks out ckeditor/ckeditor4
-      - name: Checkout ckeditor4
+      - name: Checkout repo
         uses: actions/checkout@v2
         with:
-          repository: w8tcha/CKEditor-WordCount-Plugin
-          path: ckeditor4
+          repository: ${{ matrix.repo }}
+          path: ${{ matrix.repo_name }}
           fetch-depth: 0
       # Checks out newren/git-filter-repo
       - name: Checkout git-filter-repo
@@ -53,7 +58,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
-          echo "### Processing CKEditor project: ${{ matrix.repo_name }}"
+          echo "### Processing external CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
             pushd ${{ matrix.repo_name }} > /dev/null
@@ -64,7 +69,7 @@ jobs:
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
           echo "### Filtering repo using subdirectory ${{ matrix.repo_name }}"
-          git filter-repo --source ../ckeditor4 --target ./ --preserve-commit-hashes --prune-empty auto --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          git filter-repo --source ./ --target ./ --preserve-commit-hashes --prune-empty auto --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
           git checkout master
           popd > /dev/null
         shell: bash
@@ -78,19 +83,19 @@ jobs:
           for file in composer.json package.json
           do
             if [ ! -f ${file} ]; then
-              if [ -f "$HOME/runner/template/wordcount/${file}" ]; then
+              if [ -f "$HOME/runner/template/${file}" ]; then
               echo ""
               echo "### Processing ${file}..."
-                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/wordcount/${file} > ${file}
+                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/${file} > ${file}
                 echo ""
-                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/wordcount/${file}"
+                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/${file}"
                 FILENAME="${file}"
                 git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
                 echo ""
                 echo "### filter-repo added ${file} in!"
               else
                 echo ""
-                echo "### Sorry, ${file} template not found in $HOME/runner/template/wordcount."
+                echo "### Sorry, ${file} template not found in $HOME/runner/template."
               fi
             fi
           done
