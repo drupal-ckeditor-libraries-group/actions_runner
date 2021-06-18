@@ -1,0 +1,16 @@
+{
+  "name": "drupal-ckeditor-libraries-group/__PLUGIN__",
+  "description": "CKEditor 4 __PLUGIN__ plugin",
+  "type": "drupal-library",
+  "keywords": ["ckeditor", "plugin", "__PLUGIN__"],
+  "homepage": "https://github.com/__PATH__",
+  "license": [
+    "GPL-2.0-or-later",
+    "LGPL-2.1-or-later",
+    "MPL-1.1"
+  ],
+  "support": {
+    "issues": "https://github.com/__PATH__/issues",
+    "source": "https://github.com/__PATH__/tree/master"
+  }
+}
