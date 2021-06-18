@@ -86,8 +86,8 @@ jobs:
               if [ -f "$HOME/runner/template/external/${file}" ]; then
               echo ""
               echo "### Processing ${file}..."
-                sed -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/external/${file} > ${file}
-                sed -e "s/__PATH__/${{ matrix.repo }}/g" $HOME/runner/template/external/${file} > ${file}
+                sed -e "s|__PLUGIN__|${{ matrix.repo_name }}|g" $HOME/runner/template/external/${file} > ${file}
+                sed -e "s|__PATH__|${{ matrix.repo }}|g" $HOME/runner/template/external/${file} > ${file}
                 echo ""
                 echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/external/${file}"
                 FILENAME="${file}"
