@@ -68,8 +68,8 @@ jobs:
           fi
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
-          echo "### Filtering repo using subdirectory ${{ matrix.repo_name }}"
-          git filter-repo --source ./ --target ./ --preserve-commit-hashes --prune-empty auto --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          echo "### Pruning unneeded JSON for repo ${{ matrix.repo_name }}"
+          git filter-repo --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
           git checkout master
           popd > /dev/null
         shell: bash
