@@ -106,7 +106,7 @@ jobs:
 						# if you want to suppress @... part
 						check=${#a_tag}
 						if [ $check -ge 40 ]; then
-							b_tag="${str:0:39}"
+							b_tag="${a_tag:0:39}"
 							echo "### Truncating $a_tag to $b_tag"
 							git fliter-repo --force --tag-rename $a_tag $b_tag
 						else
