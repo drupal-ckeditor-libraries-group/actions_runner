@@ -9,7 +9,6 @@ on:
     - cron: "0 0 1 */6 *"
   workflow_dispatch:
 
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   deployproject:
@@ -86,10 +85,9 @@ jobs:
               if [ -f "$HOME/runner/template/external/${file}" ]; then
               echo ""
               echo "### Processing ${file}..."
-                sed -e "s|__PLUGIN__|${{ matrix.repo_name }}|g" $HOME/runner/template/external/${file} > ${file}
-                sed -e "s|__PATH__|${{ matrix.repo }}|g" $HOME/runner/template/external/${file} > ${file}
+                sed -e "s|__PATH__|${{ matrix.repo }}|g" -e "s/__PLUGIN__/${{ matrix.repo_name }}/g" $HOME/runner/template/external/${file} > ${file}
                 echo ""
-                echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/external/${file}"
+								echo "### Generated ${{ matrix.repo_name }}/${file} from $HOME/runner/template/external/${file}"
                 FILENAME="${file}"
                 git filter-repo --force --commit-callback "if not commit.parents: commit.file_changes.append(FileChange(b'M', b'$FILENAME', b'$(git hash-object -w $FILENAME)', b'100644'))"
                 echo ""
@@ -100,6 +98,21 @@ jobs:
               fi
             fi
           done
+					echo "### Sanity checking tag length per GH002"
+					# Now, sanity-check tags.
+					for a_tag in $(git tag)
+					do
+						echo "### Checking $a_tag"
+						# if you want to suppress @... part
+						check=${#a_tag}
+						if [ $check -ge 40 ]; then
+							b_tag="${str:0:39}"
+							echo "### Truncating $a_tag to $b_tag"
+							git fliter-repo --force --tag-rename $a_tag $b_tag
+						else
+							echo "### $a_tag is compatible with GitHub"
+						fi
+					done
           popd > /dev/null
         shell: bash
       # Commit to Drupal CKEditor Libraries Group
