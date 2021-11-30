@@ -172,6 +172,7 @@ jobs:
         run: |
           if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }}/ p")" ]; then
             gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
           fi
           echo "### Processing CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
@@ -241,6 +242,9 @@ jobs:
             echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git config branch.major.remote origin
             git push -u -f origin major --tags
+            if [ ! -z "${{ env.CREATE_PACKAGE }}" ]; then
+              curl -X POST 'https://packagist.org/api/create-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d '{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+            fi
           fi
           popd > /dev/null
         shell: bash
