@@ -25,6 +25,8 @@ jobs:
           repo_name: youtube
         - repo: smonetti/btbutton
           repo_name: btbutton
+        - repo: zetamen/ckeditor-spoiler
+          repo_name: spoiler
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -60,6 +62,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
+          if [ -z gh repo list drupal-ckeditor-libraries-group | grep drupal-ckeditor-libraries-group/${{ matrix.repo_name }} ]; then
+            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+          fi
           echo "### Processing external CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
