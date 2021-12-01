@@ -60,7 +60,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
         run: |
-          gh auth login --with-token < $GITHUB_TOKEN
+          gh auth login --with-token < "$GITHUB_TOKEN"
           gh config set git_protocol ssh --host github.com
           if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }}/ p")" ]; then
             gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
