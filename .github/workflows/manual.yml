@@ -14,7 +14,7 @@ on:
 jobs:
   deployproject:
     strategy:
-      max-parallel: 3
+      max-parallel: 2
       matrix:
         repo_name:
         # define the list of repos here
