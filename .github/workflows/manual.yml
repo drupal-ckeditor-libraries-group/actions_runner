@@ -27,9 +27,9 @@ jobs:
 #         - autolink
 #         - balloonpanel
 #         - balloontoolbar
-        - basicstyles
-#         - bbcode
-#         - bidi
+#         - basicstyles
+        - bbcode
+        - bidi
 #         - blockquote
 #         - button
 #         - clipboard
