@@ -26,8 +26,8 @@ jobs:
 #         - autogrow
 #         - autolink
 #         - balloonpanel
-        - balloontoolbar
-#         - basicstyles
+#         - balloontoolbar
+        - basicstyles
 #         - bbcode
 #         - bidi
 #         - blockquote
@@ -245,6 +245,7 @@ jobs:
             git push -u -f origin major --tags
             if [ ! -z "${{ env.CREATE_PACKAGE }}" ]; then
               curl -X POST 'https://packagist.org/api/create-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d '{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+              curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d'{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
             fi
           fi
           popd > /dev/null
