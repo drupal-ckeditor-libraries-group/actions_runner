@@ -171,8 +171,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.MACHINE_PAT }}
         run: |
+          echo '### Set Github CLI configuration'
           gh config set git_protocol ssh --host github.com
-          if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }} / p")" ]; then
+          if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }}\s/ p")" ]; then
+            echo '### Repository doesn\'t exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}'
             gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
             echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
           fi
