@@ -14,6 +14,7 @@ on:
 jobs:
   deployproject:
     strategy:
+      max-parallel: 3
       matrix:
         include:
         # define the list of repos here
@@ -58,8 +59,15 @@ jobs:
       # Generate repository
       - name: Generate repo
         env:
-          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+          GITHUB_TOKEN: ${{ secrets.MACHINE_PAT }}
         run: |
+          echo '### Set Github CLI configuration'
+          gh config set git_protocol ssh --host github.com
+          if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }}\s/ p")" ]; then
+            echo "### Repository doesn't exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"
+            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
+          fi
           echo "### Processing external CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
@@ -143,6 +151,10 @@ jobs:
             echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git config branch.master.remote origin
             git push -u -f origin master --tags
+            if [ ! -z "${{ env.CREATE_PACKAGE }}" ]; then
+              curl -X POST 'https://packagist.org/api/create-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d '{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+              curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d'{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+            fi
           fi
           popd > /dev/null
         shell: bash
