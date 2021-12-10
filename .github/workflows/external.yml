@@ -23,19 +23,14 @@ jobs:
           subdirectory: spoiler
         - repo: lotusgodkk/lineheight
           repo_name: lineheight
-          subdirectory: .
         - repo: stevenvdhout/format_buttons
           repo_name: format_buttons
-          subdirectory: .
         - repo: w8tcha/CKEditor-WordCount-Plugin
           repo_name: wordcount
-          subdirectory: .
         - repo: fonini/ckeditor-youtube-plugin
           repo_name: youtube
-          subdirectory: .
         - repo: smonetti/btbutton
           repo_name: btbutton
-          subdirectory: .
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -91,7 +86,11 @@ jobs:
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
           echo "### Pruning unneeded JSON for repo ${{ matrix.repo_name }}"
-          git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json --subdirectory-filter ${{ matrix.subdirectory }}
+          if [[ -n "${{ matrix.subdirectory }}" ]]; then
+           git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json --subdirectory-filter ${{ matrix.subdirectory }}
+          else
+           git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          fi
           git branch -v
           git checkout master
           popd > /dev/null
