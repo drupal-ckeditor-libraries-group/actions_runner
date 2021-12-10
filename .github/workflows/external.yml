@@ -14,9 +14,12 @@ on:
 jobs:
   deployproject:
     strategy:
+      max-parallel: 3
       matrix:
         include:
         # define the list of repos here
+        - repo: lotusgodkk/lineheight
+          repo_name: lineheight
         - repo: stevenvdhout/format_buttons
           repo_name: format_buttons
         - repo: w8tcha/CKEditor-WordCount-Plugin
@@ -60,13 +63,19 @@ jobs:
       # Generate repository
       - name: Generate repo
         env:
-          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+          GITHUB_TOKEN: ${{ secrets.MACHINE_PAT }}
         run: |
-          if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }}/ p")" ]; then
-            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+          echo '### Set Github CLI configuration'
+          gh config set git_protocol ssh --host github.com
+          if ! gh repo view drupal-ckeditor-libraries-group/${{ matrix.repo_name }} ; then
+            echo "### Repository doesn't exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"
+            ! gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
           fi
           echo "### Processing external CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
+            echo ""
+            echo "### Init repo locally"
             mkdir -p ${{ matrix.repo_name }}
             pushd ${{ matrix.repo_name }} > /dev/null
             git init
@@ -77,6 +86,7 @@ jobs:
           echo ""
           echo "### Pruning unneeded JSON for repo ${{ matrix.repo_name }}"
           git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          git branch -v
           git checkout master
           popd > /dev/null
         shell: bash
@@ -148,6 +158,10 @@ jobs:
             echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git config branch.master.remote origin
             git push -u -f origin master --tags
+            if [ ! -z "${{ env.CREATE_PACKAGE }}" ]; then
+              curl -X POST 'https://packagist.org/api/create-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d '{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+              curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d'{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+            fi
           fi
           popd > /dev/null
         shell: bash

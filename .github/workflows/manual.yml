@@ -14,6 +14,7 @@ on:
 jobs:
   deployproject:
     strategy:
+      max-parallel: 2
       matrix:
         repo_name:
         # define the list of repos here
@@ -26,18 +27,114 @@ jobs:
         - autogrow
         - autolink
         - balloonpanel
+        - balloontoolbar
+        - basicstyles
+        - bbcode
+        - bidi
+        - blockquote
+        - button
+        - clipboard
+        - cloudservices
         - codesnippet
+        - codesnippetgeshi
         - colorbutton
+        - colordialog
+        - contextmenu
+        - copyformatting
+        - devtools
+        - dialog
+        - dialogadvtab
+        - dialogui
         - div
+        - divarea
+        - docprops
+        - easyimage
+        - elementspath
+        - embed
+        - embedbase
+        - embedsemantic
+        - emoji
+        - enterkey
+        - entities
         - fakeobjects
+        - filebrowser
+        - filetools
         - find
+        - flash
+        - floatingspace
+        - floatpanel
         - font
+        - format
+        - forms
+        - horizontalrule
+        - htmlwriter
+        - iframe
+        - iframedialog
+        - image
+        - image2
+        - imagebase
+        - indent
+        - indentblock
+        - indentlist
+        - justify
+        - language
+        - lineutils
         - link
+        - list
+        - listblock
+        - liststyle
+        - magicline
+        - mathjax
+        - maximize
+        - mentions
+        - menu
+        - menubutton
+        - newpage
         - notification
+        - notificationaggregator
+        - pagebreak
+        - panel
         - panelbutton
+        - pastefromgdocs
+        - pastefromlibreoffice
+        - pastefromword
+        - pastetext
+        - pastetools
+        - placeholder
+        - popup
+        - preview
+        - print
+        - removeformat
+        - resize
+        - richcombo
+        - save
+        - selectall
+        - sharedspace
+        - showblocks
+        - showborders
+        - smiley
+        - sourcearea
+        - sourcedialog
+        - specialchar
+        - stylescombo
+        - stylesheetparser
+        - tab
+        - table
+        - tableresize
+        - tableselection
+        - tabletools
         - templates
         - textmatch
         - textwatcher
+        - toolbar
+        - uicolor
+        - undo
+        - uploadfile
+        - uploadimage
+        - uploadwidget
+        - widget
+        - widgetselection
+        - wysiwygarea
         - xml
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -72,8 +169,15 @@ jobs:
       # Generate repository
       - name: Generate repo
         env:
-          GITHUB_TOKEN: ${{ secrets.OPENSSH_KEY }}
+          GITHUB_TOKEN: ${{ secrets.MACHINE_PAT }}
         run: |
+          echo '### Set Github CLI configuration'
+          gh config set git_protocol ssh --host github.com
+          if ! gh repo view drupal-ckeditor-libraries-group/${{ matrix.repo_name }} ; then
+            echo "### Repository doesn't exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"
+            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
+          fi
           echo "### Processing CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
             mkdir -p ${{ matrix.repo_name }}
@@ -142,6 +246,10 @@ jobs:
             echo "### Writing to git@github.com:drupal-ckeditor-libraries-group/${{ matrix.repo_name }}.git"
             git config branch.major.remote origin
             git push -u -f origin major --tags
+            if [ ! -z "${{ env.CREATE_PACKAGE }}" ]; then
+              curl -X POST 'https://packagist.org/api/create-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d '{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+              curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=drupal-ckeditor-libraries-group&apiToken=${{ secrets.PACKAGIST_USER_TOKEN }}' -d'{"repository":{"url":"https://github.com/drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"}}'
+            fi
           fi
           popd > /dev/null
         shell: bash
