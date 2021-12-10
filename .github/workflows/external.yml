@@ -14,22 +14,28 @@ on:
 jobs:
   deployproject:
     strategy:
-      max-parallel: 3
+      max-parallel: 1
       matrix:
         include:
         # define the list of repos here
-        - repo: lotusgodkk/lineheight
-          repo_name: lineheight
-        - repo: stevenvdhout/format_buttons
-          repo_name: format_buttons
-        - repo: w8tcha/CKEditor-WordCount-Plugin
-          repo_name: wordcount
-        - repo: fonini/ckeditor-youtube-plugin
-          repo_name: youtube
-        - repo: smonetti/btbutton
-          repo_name: btbutton
         - repo: zetamen/ckeditor-spoiler
           repo_name: spoiler
+          subdirectory: spoiler
+        - repo: lotusgodkk/lineheight
+          repo_name: lineheight
+          subdirectory: .
+        - repo: stevenvdhout/format_buttons
+          repo_name: format_buttons
+          subdirectory: .
+        - repo: w8tcha/CKEditor-WordCount-Plugin
+          repo_name: wordcount
+          subdirectory: .
+        - repo: fonini/ckeditor-youtube-plugin
+          repo_name: youtube
+          subdirectory: .
+        - repo: smonetti/btbutton
+          repo_name: btbutton
+          subdirectory: .
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -85,7 +91,7 @@ jobs:
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
           echo "### Pruning unneeded JSON for repo ${{ matrix.repo_name }}"
-          git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json --subdirectory-filter ${{ matrix.subdirectory }}
           git branch -v
           git checkout master
           popd > /dev/null
