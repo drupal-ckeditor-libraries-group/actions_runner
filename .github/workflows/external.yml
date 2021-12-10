@@ -18,6 +18,8 @@ jobs:
       matrix:
         include:
         # define the list of repos here
+        - repo: lotusgodkk/lineheight
+          repo_name: lineheight
         - repo: stevenvdhout/format_buttons
           repo_name: format_buttons
         - repo: w8tcha/CKEditor-WordCount-Plugin
@@ -26,8 +28,6 @@ jobs:
           repo_name: youtube
         - repo: smonetti/btbutton
           repo_name: btbutton
-        - repo: lotusgodkk/lineheight
-          repo_name: lineheight
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -68,6 +68,7 @@ jobs:
           if ! gh repo view drupal-ckeditor-libraries-group/${{ matrix.repo_name }} ; then
             echo "### Repository doesn't exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"
             ! gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            sleep 5
             echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
             rm -rf ${{ matrix.repo_name }}
           fi
