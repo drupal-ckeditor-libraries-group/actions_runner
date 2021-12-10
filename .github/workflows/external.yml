@@ -67,7 +67,7 @@ jobs:
           gh config set git_protocol ssh --host github.com
           if ! gh repo view drupal-ckeditor-libraries-group/${{ matrix.repo_name }} ; then
             echo "### Repository doesn't exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"
-            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false --remote=${{ matrix.repo_name }}___
             echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
             rm -rf ${{ matrix.repo_name }}
           fi
