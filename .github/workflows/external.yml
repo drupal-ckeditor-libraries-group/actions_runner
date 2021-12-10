@@ -18,6 +18,8 @@ jobs:
       matrix:
         include:
         # define the list of repos here
+        - repo: lotusgodkk/lineheight
+          repo_name: lineheight
         - repo: stevenvdhout/format_buttons
           repo_name: format_buttons
         - repo: w8tcha/CKEditor-WordCount-Plugin
@@ -63,13 +65,15 @@ jobs:
         run: |
           echo '### Set Github CLI configuration'
           gh config set git_protocol ssh --host github.com
-          if [ -z "$(gh repo list drupal-ckeditor-libraries-group | sed -n "/drupal-ckeditor-libraries-group\/${{ matrix.repo_name }}\s/ p")" ]; then
+          if ! gh repo view drupal-ckeditor-libraries-group/${{ matrix.repo_name }} ; then
             echo "### Repository doesn't exist. Attempt to create the repo drupal-ckeditor-libraries-group/${{ matrix.repo_name }}"
-            gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
+            ! gh repo create drupal-ckeditor-libraries-group/${{ matrix.repo_name }} --confirm --public --enable-issues=false --enable-wiki=false
             echo "CREATE_PACKAGE=create" >> $GITHUB_ENV
           fi
           echo "### Processing external CKEditor project: ${{ matrix.repo_name }}"
           if [ ! -d ${{ matrix.repo_name }} ]; then
+            echo ""
+            echo "### Init repo locally"
             mkdir -p ${{ matrix.repo_name }}
             pushd ${{ matrix.repo_name }} > /dev/null
             git init
@@ -80,6 +84,7 @@ jobs:
           echo ""
           echo "### Pruning unneeded JSON for repo ${{ matrix.repo_name }}"
           git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          git branch -v
           git checkout master
           popd > /dev/null
         shell: bash
