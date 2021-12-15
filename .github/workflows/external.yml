@@ -18,6 +18,9 @@ jobs:
       matrix:
         include:
         # define the list of repos here
+        - repo: zetamen/ckeditor-spoiler
+          repo_name: spoiler
+          subdirectory: spoiler
         - repo: lotusgodkk/lineheight
           repo_name: lineheight
         - repo: stevenvdhout/format_buttons
@@ -83,7 +86,11 @@ jobs:
           pushd ${{ matrix.repo_name }} > /dev/null
           echo ""
           echo "### Pruning unneeded JSON for repo ${{ matrix.repo_name }}"
-          git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          if [[ -n "${{ matrix.subdirectory }}" ]]; then
+           git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json --subdirectory-filter ${{ matrix.subdirectory }}
+          else
+           git filter-repo --force --preserve-commit-hashes --path-rename composer.json:legacy.composer.json --path-rename package.json:legacy.package.json
+          fi
           git branch -v
           git checkout master
           popd > /dev/null
