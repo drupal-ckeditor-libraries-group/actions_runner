@@ -27,6 +27,7 @@ jobs:
           repo_name: format_buttons
         - repo: w8tcha/CKEditor-WordCount-Plugin
           repo_name: wordcount
+          subdirectory: wordcount
         - repo: fonini/ckeditor-youtube-plugin
           repo_name: youtube
         - repo: smonetti/btbutton
