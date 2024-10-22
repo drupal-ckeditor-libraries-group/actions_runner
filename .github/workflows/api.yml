@@ -22,20 +22,20 @@ jobs:
     steps:
       # Checks out ckeditor/ckeditor4
       - name: Checkout ckeditor4
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: akilli/ckeditor4-api
           path: ckeditor4
           fetch-depth: 0
       # Checks out newren/git-filter-repo
       - name: Checkout git-filter-repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: newren/git-filter-repo
           path: git-filter-repo
       # Checks out this repo
       - name: Checkout this repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: runner
       # Runs a single command using the runners shell
